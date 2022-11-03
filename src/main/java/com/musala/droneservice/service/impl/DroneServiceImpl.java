@@ -1,6 +1,7 @@
 package com.musala.droneservice.service.impl;
 
 import com.musala.droneservice.dto.Drone;
+import com.musala.droneservice.enums.State;
 import com.musala.droneservice.repository.DroneRepository;
 import com.musala.droneservice.service.DroneService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,8 +27,18 @@ public class DroneServiceImpl implements DroneService {
         com.musala.droneservice.entity.Drone droneEntity = convertDroneDtoToDrone(drone);
         Optional<com.musala.droneservice.entity.Drone> droneById = droneRepository.findById(drone.getSerialNumber());
         droneById.ifPresent(droneExists -> droneEntity.setSerialNumber(droneExists.getSerialNumber()));
-        droneRepository.save(droneEntity);
-        return drone;
+
+        return convertDroneToDroneDto(droneRepository.save(droneEntity));
+    }
+
+    @Override
+    public List<Drone> getAllAvailableDrones() {
+
+        List<com.musala.droneservice.entity.Drone> droneList = droneRepository.getDronesByStateAndBatteryCapacityIsGreaterThanEqual(State.IDLE, 25);
+        List<Drone> drones = new ArrayList<>();
+        droneList.forEach(drone -> drones.add(convertDroneToDroneDto(drone)));
+
+        return drones;
     }
 
     private com.musala.droneservice.entity.Drone convertDroneDtoToDrone(Drone drone) {
@@ -39,7 +52,7 @@ public class DroneServiceImpl implements DroneService {
     private Drone convertDroneToDroneDto(com.musala.droneservice.entity.Drone drone) {
 
         Drone droneDto = new Drone();
-        BeanUtils.copyProperties(droneDto, drone);
+        BeanUtils.copyProperties(drone, droneDto);
         return droneDto;
 
     }

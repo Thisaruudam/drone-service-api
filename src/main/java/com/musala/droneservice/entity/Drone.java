@@ -15,6 +15,7 @@ public class Drone {
     @Column(length = 100)
     private String serialNumber;
     private String model;
+    @Column(precision = 3, scale = 2)
     private double weightLimit;
     private int batteryCapacity;
     @Enumerated(EnumType.STRING)

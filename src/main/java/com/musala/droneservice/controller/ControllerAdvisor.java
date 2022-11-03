@@ -1,7 +1,9 @@
 package com.musala.droneservice.controller;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -17,7 +19,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public static final String TIMESTAMP = "timestamp";
     public static final String MESSAGE = "message";
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<Object> handleInternalServerError(
             final RuntimeException ex, final WebRequest request) {
 
@@ -26,6 +28,15 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         body.put(MESSAGE, ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+                                                                  HttpStatus status, WebRequest request) {
+        final Map<String, Object> body = new LinkedHashMap<>();
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
 }
