@@ -6,10 +6,11 @@ import lombok.Setter;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Getter
 @Setter
-public class Drone {
+public class Drone implements Serializable {
 
     @Size(min = 1, max = 100, message = "Serial number should be less than 100 characters")
     private String serialNumber;

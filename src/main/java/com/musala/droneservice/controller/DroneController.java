@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "/drones")
+@RequestMapping(path = "api/v1/drones")
 public class DroneController {
 
     private final DroneService droneService;
@@ -24,8 +24,18 @@ public class DroneController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Drone>> getAllDrones() throws Exception {
+        return ResponseEntity.ok(droneService.getAllDrones());
+    }
+
+    @GetMapping(value = "/available", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Drone>> getAvailableDrones() throws Exception {
         return ResponseEntity.ok(droneService.getAllAvailableDrones());
+    }
+
+    @GetMapping(value = "{serialNumber}/battery-capacity", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Integer> getDroneBatteryCapacity(@PathVariable String serialNumber) throws Exception {
+        return ResponseEntity.ok(droneService.getBatteryLevelByDrone(serialNumber));
     }
 
 }

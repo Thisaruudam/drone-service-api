@@ -6,6 +6,7 @@ import com.musala.droneservice.repository.DroneRepository;
 import com.musala.droneservice.service.DroneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ public class DroneServiceImpl implements DroneService {
 
     private final DroneRepository droneRepository;
 
+    @Value("${drone.service.api.min.battery.level}")
+    private int minBatteryLevel;
+
     @Override
     public Drone saveOrUpdate(Drone drone) {
 
@@ -34,7 +38,22 @@ public class DroneServiceImpl implements DroneService {
     @Override
     public List<Drone> getAllAvailableDrones() {
 
-        List<com.musala.droneservice.entity.Drone> droneList = droneRepository.getDronesByStateAndBatteryCapacityIsGreaterThanEqual(State.IDLE, 25);
+        List<com.musala.droneservice.entity.Drone> droneList = droneRepository.getDronesByStateAndBatteryCapacityIsGreaterThanEqual(State.IDLE, minBatteryLevel);
+        List<Drone> drones = new ArrayList<>();
+        droneList.forEach(drone -> drones.add(convertDroneToDroneDto(drone)));
+
+        return drones;
+    }
+
+    @Override
+    public int getBatteryLevelByDrone(String serialNumber) {
+        return droneRepository.getDroneBatteryCapacityBySerialNumber(serialNumber);
+    }
+
+    @Override
+    public List<Drone> getAllDrones() {
+
+        List<com.musala.droneservice.entity.Drone> droneList = droneRepository.findAll();
         List<Drone> drones = new ArrayList<>();
         droneList.forEach(drone -> drones.add(convertDroneToDroneDto(drone)));
 
