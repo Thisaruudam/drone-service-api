@@ -6,7 +6,4 @@ public class DroneLoadingException extends RuntimeException {
         super(message);
     }
 
-    public DroneLoadingException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
