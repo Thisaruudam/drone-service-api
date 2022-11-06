@@ -35,7 +35,7 @@ public class LoadServiceImpl implements LoadService {
     @Override
     public Load loadDroneWithMedication(Load load) throws DroneLoadingException {
 
-        if(Objects.isNull(load.getDrone().getSerialNumber())) {
+        if(Objects.isNull(load.getDrone()) || Objects.isNull(load.getDrone().getSerialNumber())) {
             throw new DroneLoadingException("Drone need to be specified.");
         }
 
